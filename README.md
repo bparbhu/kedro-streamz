@@ -1,4 +1,4 @@
-# kedro_streamz
+# kedro-streamz
 
 ## Overview
 
