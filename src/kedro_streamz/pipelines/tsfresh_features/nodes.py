@@ -3,8 +3,8 @@ import pandas as pd
 from tsfresh import extract_features
 from tsfresh.utilities.dataframe_functions import roll_time_series
 from dask import dataframe as dd
+from streamz import Stream
 from sqlalchemy import create_engine
-
 
 def extract_time_series_features(catalog: DataCatalog) -> pd.DataFrame:
     """
@@ -16,10 +16,8 @@ def extract_time_series_features(catalog: DataCatalog) -> pd.DataFrame:
     Returns:
         A DataFrame with extracted features.
     """
-    # Load the DataFrame from the catalog
-    df = catalog.load("raw_time_series")
+    df = catalog.load("raw_time_series")  # Load the DataFrame from the catalog
 
-    # Optionally use Dask for distributed computation.
     # Convert pandas dataframe to Dask dataframe.
     dask_df = dd.from_pandas(df, npartitions=4)
 
@@ -31,24 +29,21 @@ def extract_time_series_features(catalog: DataCatalog) -> pd.DataFrame:
 
     return features
 
-# Further nodes or functions as needed.
-
-
-# If you're using streamz, you might have additional functions here, like:
-
-def stream_extract_features(data_stream):
+def stream_extract_features(catalog: DataCatalog) -> Stream:
     """
     Extract features from streaming time series data using tsfresh and Streamz.
 
     Args:
-        data_stream: Streamz data stream of time series data.
+        catalog: Kedro DataCatalog to load the input data.
 
     Returns:
         Streamz data stream with extracted features.
     """
-    return data_stream.map(extract_time_series_features)
+    source = Stream(scatter=True, asynchronous=True)
+    data_stream = source.map(catalog.load("raw_time_series"))
+    processed_stream = data_stream.map(extract_time_series_features)
 
-# src/my_project/pipelines/tsfresh_features/nodes.py
+    return processed_stream  # You can also return the source if needed to feed in data from external sources
 
 def store_features_bigquery(features: pd.DataFrame) -> None:
     """
@@ -62,7 +57,6 @@ def store_features_bigquery(features: pd.DataFrame) -> None:
     """
     # Assuming you've set up GOOGLE_APPLICATION_CREDENTIALS
     features.to_gbq('your_project_id.your_dataset.your_table_name')
-
 
 def store_features_redshift(features: pd.DataFrame) -> None:
     """
