@@ -1,0 +1,3 @@
+2023-08-14 22:50:26,742 - py.warnings - WARNING - C:\Users\brian\anaconda3\envs\kedro_template\lib\site-packages\kedro\framework\session\session.py:266: FutureWarning: ConfigLoader will be deprecated in Kedro 0.19. Please use the OmegaConfigLoader instead. To consult the documentation for OmegaConfigLoader, see here: https://docs.kedro.org/en/stable/configuration/advanced_configuration.html#omegaconfigloader
+  warnings.warn(
+
