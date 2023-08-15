@@ -1,17 +1,37 @@
-from kedro.pipeline import Pipeline, node
+# src/my_project/pipelines/tsfresh_features/pipeline.py
 
-from .nodes import extract_time_series_features
+from kedro.pipeline import Pipeline, node
+from .nodes import (
+    extract_time_series_features,
+    store_features_redshift,
+    store_features_bigquery
+)
 
 def create_pipeline(**kwargs):
-    """Create the tsfresh feature extraction pipeline."""
     return Pipeline(
         [
+            # Extracting tsfresh features
             node(
-                func=extract_time_series_features,
-                inputs="raw_time_series",
-                outputs="time_series_features",
-                name="node_extract_time_series_features",
+                extract_time_series_features,
+                "raw_time_series",
+                "features",
+                name="tsfresh_calculation"
             ),
-            # Add more nodes as needed
+
+            # Storing features in AWS Redshift
+            node(
+                store_features_redshift,
+                "features",
+                None,
+                name="store_redshift"
+            ),
+
+            # Storing features in BigQuery
+            node(
+                store_features_bigquery,
+                "features",
+                None,
+                name="store_bigquery"
+            )
         ]
     )
