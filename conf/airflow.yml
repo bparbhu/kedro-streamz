@@ -1,0 +1,23 @@
+# Global parameters
+default:
+    start_date: [2023, 1, 1]
+    max_active_runs: 3
+    schedule_interval: "@once"
+    catchup: false
+    # Default settings applied to all tasks
+    owner: "airflow"
+    depends_on_past: false
+    email_on_failure: false
+    email_on_retry: false
+    retries: 1
+    retry_delay: 5
+
+# Arguments specific to the pipeline (overrides the parameters above)
+data_science:
+    owner: "airflow-ds"
+
+# Add more pipeline-specific configurations if needed
+another_pipeline_name:
+    owner: "another_owner"
+    start_date: [2023, 2, 1]
+    schedule_interval: "@daily"
